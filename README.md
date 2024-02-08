@@ -7,8 +7,14 @@ Topics
     rc/channels - received rc channels values
     rc/link - connection statistics information
 
+---
 
 ### Installation
+
+
+#### Dependencies:
+
+...
 
 
 Let's assume that your ros 2 workspace localized at `~/row2_ws/`.
@@ -18,7 +24,7 @@ Let's assume that your ros 2 workspace localized at `~/row2_ws/`.
 
 ```bash
 cd ~/row2_ws/src
-git clone
+git clone https://github.com/AndreyTulyakov/ros2-crsf_receiver.git
 ```
 
 #### 2. Build
@@ -33,6 +39,9 @@ colcon build --packages-select ros2_crsf_receiver
 ```bash
 source ~/row2_ws/install/setup.bash
 ```
+
+
+---
 
 
 ### Running
