@@ -1,53 +1,56 @@
-### Description
+## Description
 
 
-ROS 2 package for receiving CRSF (RC channels values) packets over serial port (UART).
 
-Topics
-    rc/channels - received rc channels values
-    rc/link - connection statistics information
+**ROS 2** package for receiving CRSF (RC channels values) packets over serial port (UART).
+
+
+### Topics
+    
+- `rc/channels` - received rc channels values
+- `rc/link` - connection statistics information
+
 
 ---
 
-### Installation
+## Installation
 
 
-#### Dependencies:
 
-...
+### Dependencies: ...
 
 
 Let's assume that your ros 2 workspace localized at `~/row2_ws/`.
 
 
-#### 1. Clone package from git:
+### 1. Clone package from git:
 
 ```bash
 cd ~/row2_ws/src
 git clone https://github.com/AndreyTulyakov/ros2-crsf_receiver.git
 ```
 
-#### 2. Build
+### 2. Build
 
 ```bash
 cd ~/row2_ws
 colcon build --packages-select ros2_crsf_receiver
 ```
 
-#### 3. Re-source
+### 3. Re-source
 
 ```bash
 source ~/row2_ws/install/setup.bash
 ```
 
-
 ---
 
 
-### Running
+
+## Running
 
 
-#### Set up params:
+### Set up params:
 
 1. Serial device name: `device`, default is `/dev/ttyUSB0`
 2. Baud rate: `baud_rate`, default is `425000`
@@ -55,7 +58,7 @@ source ~/row2_ws/install/setup.bash
 4. Receiver rate (hz): `receiver_rate`, default is `100`
 
 
-#### Run ros node:
+### Run ros node:
 
 ```bash
 # Run Node with default parameters
