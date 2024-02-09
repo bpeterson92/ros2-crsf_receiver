@@ -6,10 +6,17 @@ CrsfReceiverNode::CrsfReceiverNode(): Node("crsf_reader_node")
     this->declare_parameter("device", "/dev/ttyUSB0");
     this->declare_parameter("baudrate", CRSF_BAUDRATE);
     this->declare_parameter("link_stats", false);
-    this->declare_parameter("receiver_rate", false);
+    this->declare_parameter("receiver_rate", 100);
 
-    channels_publisher = this->create_publisher<std_msgs::msg::Int32MultiArray>("rc/channels", 10);
-    link_publisher = this->create_publisher<std_msgs::msg::String>("rc/link", 10);
+    channels_publisher = this->create_publisher<std_msgs::msg::Int32MultiArray>(
+        "rc/channels", 
+        rclcpp::QoS(1).best_effort().durability_volatile()
+    );
+
+    link_publisher = this->create_publisher<std_msgs::msg::String>(
+        "rc/link", 
+        rclcpp::QoS(1).best_effort().durability_volatile()
+    );
 
     device = this->get_parameter("device").as_string();
     int baudrate = this->get_parameter("baudrate").as_int();
@@ -37,8 +44,9 @@ void CrsfReceiverNode::timer_callback()
     if(serial.GetState() == CppLinuxSerial::State::CLOSED) {
         try {
             serial.Open();
+            
         } catch(const CppLinuxSerial::Exception& e) {
-            RCLCPP_WARN(this->get_logger(), "Can not open serial port: %s", device);
+            RCLCPP_WARN(this->get_logger(), "Can not open serial port: %s", device.c_str());
             return;
         }
     }
@@ -50,6 +58,13 @@ void CrsfReceiverNode::timer_callback()
             parser.parse_incoming_byte(b);
         }
         received_buffer.clear();
+    }
+
+    if(parser.is_channels_actual()) {
+        auto message = std_msgs::msg::Int32MultiArray();
+        int* channels = parser.get_channels_values();
+        message.data.insert(message.data.end(), channels, channels + CRSF_NUM_CHANNELS);
+        channels_publisher->publish(message);
     }
 }
 

@@ -9,6 +9,7 @@
 #include "std_msgs/msg/int32_multi_array.hpp"
 #include "rclcpp/rclcpp.hpp"
 
+#include <qos.hpp>
 #include <CppLinuxSerial/SerialPort.hpp>
 
 #include "crsf_parser.h"
@@ -33,11 +34,10 @@ private:
   std::string device;
   vector<uint8_t> received_buffer;
   rclcpp::TimerBase::SharedPtr timer_;
-  
+
   rclcpp::Publisher<std_msgs::msg::Int32MultiArray>::SharedPtr channels_publisher; // crsf_receiver::msg::CRSFChannels16
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr link_publisher;
 };
-
 
 
 #endif 
