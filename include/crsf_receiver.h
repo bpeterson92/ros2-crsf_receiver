@@ -8,8 +8,7 @@
 #include "std_msgs/msg/string.hpp"
 #include "std_msgs/msg/int32_multi_array.hpp"
 #include "rclcpp/rclcpp.hpp"
-
-#include <qos.hpp>
+#include "rclcpp/qos.hpp"
 #include <CppLinuxSerial/SerialPort.hpp>
 
 #include "crsf_parser.h"
