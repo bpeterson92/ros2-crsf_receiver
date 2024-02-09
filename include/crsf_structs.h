@@ -10,7 +10,7 @@ typedef struct crsf_header_s
     uint8_t device_addr; // from crsf_addr_e
     uint8_t frame_size;  // counts size after this byte, so it must be the payload size + 2 (type and crc)
     uint8_t type;        // from crsf_frame_type_e
-    uint8_t* data;
+    uint8_t data[];
 } PACKED crsf_header_t;
 
 typedef struct crsf_channels_s

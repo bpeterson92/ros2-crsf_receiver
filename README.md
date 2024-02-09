@@ -81,3 +81,15 @@ ros2 run crsf_receiver crsf_receiver_node
 # Or setup and run Node with custom parameters values:
 ros2 run crsf_receiver crsf_receiver_node --ros-args -p "device:=/dev/serial0" -p baud_rate:=420000  -p link_stats:=true
 ```
+
+### Check
+
+After correct setup and running without errors you can check topics:
+
+```bash
+# Check channels values
+ros2 topic echo /rc/channels
+
+# Check receiver rate
+ros2 topic hz /rc/channels
+```

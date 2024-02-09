@@ -3,7 +3,7 @@
 
 CrsfReceiverNode::CrsfReceiverNode(): Node("crsf_reader_node")
 {
-    this->declare_parameter("device", "/dev/ttyUSB0");
+    this->declare_parameter("device", "/dev/serial0");
     this->declare_parameter("baudrate", CRSF_BAUDRATE);
     this->declare_parameter("link_stats", false);
     this->declare_parameter("receiver_rate", 100);
