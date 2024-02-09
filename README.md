@@ -17,7 +17,21 @@
 
 
 
-### Dependencies: ...
+### Dependencies:
+
+Install `CppLinuxSerial` before:
+
+```bash
+git clone https://github.com/AndreyTulyakov/CppLinuxSerial.git
+
+cd CppLinuxSerial
+mkdir build/
+cd build
+cmake ..
+make
+sudo make install
+cd ../..
+```
 
 
 Let's assume that your ros 2 workspace localized at `~/row2_ws/`.
@@ -53,7 +67,7 @@ source ~/row2_ws/install/setup.bash
 ### Set up params:
 
 1. Serial device name: `device`, default is `/dev/ttyUSB0`
-2. Baud rate: `baud_rate`, default is `425000`
+2. Baud rate: `baud_rate`, default is `420000`
 3. Enable / Disable link statistics info: `link_stats`, default is `false`
 4. Receiver rate (hz): `receiver_rate`, default is `100`
 
@@ -65,5 +79,5 @@ source ~/row2_ws/install/setup.bash
 ros2 run crsf_receiver crsf_receiver_node
 
 # Or setup and run Node with custom parameters values:
-ros2 run crsf_receiver crsf_receiver_node --ros-args -p "device:=/dev/ttyUSB1" -p baud_rate:=420000  -p link_stats:=true
+ros2 run crsf_receiver crsf_receiver_node --ros-args -p "device:=/dev/ttyUSB1" -p baud_rate:=425000  -p link_stats:=true
 ```
