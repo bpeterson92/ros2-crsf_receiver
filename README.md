@@ -22,7 +22,7 @@
 Install `CppLinuxSerial` before:
 
 ```bash
-git clone https://github.com/AndreyTulyakov/CppLinuxSerial.git
+git clone https://github.com/gbmhunter/CppLinuxSerial.git
 
 cd CppLinuxSerial
 mkdir build/

@@ -55,6 +55,6 @@ void CrsfReceiverNode::timer_callback()
 
 CrsfReceiverNode::~CrsfReceiverNode() {
     if(serial.GetState() == CppLinuxSerial::State::OPEN) {
-        serial.Close()
+        serial.Close();
     }
 }
