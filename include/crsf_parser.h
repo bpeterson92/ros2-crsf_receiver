@@ -28,6 +28,7 @@ public:
     void parse_incoming_byte(uint8_t b);
     int get_channel_value(unsigned int ch) const { return _channels[ch - 1]; }
     int* get_channels_values() const { return (int*)_channels; };
+    crsfLinkStatistics_t get_link_info() const { return link_statistics_packet; };
 
     bool is_channels_actual();
     bool is_link_statistics_actual();

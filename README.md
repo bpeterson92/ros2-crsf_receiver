@@ -41,14 +41,14 @@ Let's assume that your ros 2 workspace localized at `~/row2_ws/`.
 
 ```bash
 cd ~/row2_ws/src
-git clone https://github.com/AndreyTulyakov/ros2-crsf_receiver.git
+git clone https://github.com/AndreyTulyakov/ros2-crsf_receiver.git crsf_receiver
 ```
 
 ### 2. Build
 
 ```bash
 cd ~/row2_ws
-colcon build --packages-select ros2_crsf_receiver
+colcon build --packages-select crsf_receiver
 ```
 
 ### 3. Re-source

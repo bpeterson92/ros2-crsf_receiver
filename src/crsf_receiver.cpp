@@ -8,12 +8,12 @@ CrsfReceiverNode::CrsfReceiverNode(): Node("crsf_reader_node")
     this->declare_parameter("link_stats", false);
     this->declare_parameter("receiver_rate", 100);
 
-    channels_publisher = this->create_publisher<std_msgs::msg::Int32MultiArray>(
+    channels_publisher = this->create_publisher<crsf_receiver_msg::msg::CRSFChannels16>(
         "rc/channels", 
         rclcpp::QoS(1).best_effort().durability_volatile()
     );
 
-    link_publisher = this->create_publisher<std_msgs::msg::String>(
+    link_publisher = this->create_publisher<crsf_receiver_msg::msg::CRSFLinkInfo>(
         "rc/link", 
         rclcpp::QoS(1).best_effort().durability_volatile()
     );
@@ -61,10 +61,13 @@ void CrsfReceiverNode::timer_callback()
     }
 
     if(parser.is_channels_actual()) {
-        auto message = std_msgs::msg::Int32MultiArray();
-        int* channels = parser.get_channels_values();
-        message.data.insert(message.data.end(), channels, channels + CRSF_NUM_CHANNELS);
+        CRSFChannels16 message = convert_to_channels_message(parser.get_channels_values());
         channels_publisher->publish(message);
+    }
+
+    if(parser.is_link_statistics_actual()) {
+        CRSFLinkInfo message = convert_to_link_info(parser.get_link_info());
+        link_publisher->publish(message);
     }
 }
 

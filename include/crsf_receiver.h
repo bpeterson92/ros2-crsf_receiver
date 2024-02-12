@@ -7,18 +7,21 @@
 
 #include "std_msgs/msg/string.hpp"
 #include "std_msgs/msg/int32_multi_array.hpp"
+
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp/qos.hpp"
 #include <CppLinuxSerial/SerialPort.hpp>
 
 #include "crsf_parser.h"
-
+#include "crsf_receiver_msg/msg/crsf_channels16.hpp"
+#include "crsf_receiver_msg/msg/crsf_link_info.hpp"
 
 using namespace std::chrono_literals;
 using namespace mn;
+using namespace crsf_receiver_msg::msg;
 
 
-class CrsfReceiverNode : public rclcpp::Node
+class CrsfReceiverNode: public rclcpp::Node
 {
 public:
   explicit CrsfReceiverNode();
@@ -34,8 +37,8 @@ private:
   vector<uint8_t> received_buffer;
   rclcpp::TimerBase::SharedPtr timer_;
 
-  rclcpp::Publisher<std_msgs::msg::Int32MultiArray>::SharedPtr channels_publisher; // crsf_receiver::msg::CRSFChannels16
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr link_publisher;
+  rclcpp::Publisher<CRSFChannels16>::SharedPtr channels_publisher;
+  rclcpp::Publisher<CRSFLinkInfo>::SharedPtr link_publisher;
 };
 
 
