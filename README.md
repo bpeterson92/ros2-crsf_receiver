@@ -41,6 +41,10 @@ Let's assume that your ros 2 workspace localized at `~/row2_ws/`.
 
 ```bash
 cd ~/row2_ws/src
+
+# Types dependency package:
+git clone https://github.com/AndreyTulyakov/ros2-crsf_receiver_msg.git crsf_receiver_msg
+
 git clone https://github.com/AndreyTulyakov/ros2-crsf_receiver.git crsf_receiver
 ```
 
@@ -48,6 +52,8 @@ git clone https://github.com/AndreyTulyakov/ros2-crsf_receiver.git crsf_receiver
 
 ```bash
 cd ~/row2_ws
+
+colcon build --packages-select crsf_receiver_msg
 colcon build --packages-select crsf_receiver
 ```
 
