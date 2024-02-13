@@ -96,6 +96,24 @@ After correct setup and running without errors you can check topics:
 # Check channels values
 ros2 topic echo /rc/channels
 
+# Check link statisics
+ros2 topic echo /rc/link
+
 # Check receiver rate
 ros2 topic hz /rc/channels
 ```
+
+
+
+###  Link statistics message fields:
+
+- `uplink_rssi_ant1` - ( dBm * -1 )
+- `uplink_rssi_ant2` - ( dBm * -1 )
+- `uplink_status` - Package success rate / Link quality ( % )
+- `uplink_snr` - ( db )
+- `active_antenna` - Diversity active antenna ( enum ant. 1 = 0, ant. 2 )
+- `rf_mode` - ( enum 4fps = 0 , 50fps, 150hz)
+- `uplink_tx_power` - ( enum 0mW = 0, 10mW, 25 mW, 100 mW, 500 mW, 1000 mW, 2000mW )
+- `downlink_rssi` - ( dBm * -1 )
+- `downlink_status` - Downlink package success rate / Link quality ( % )
+- `downlink_snr` - ( db )
