@@ -7,62 +7,49 @@ CrsfParser::CrsfParser() : _crc(0xd5)
     _last_channels_time = 0;
     _last_link_statistics_time = 0;
 
-    // rx_buffer.reserve(CRSF_FRAME_SIZE_MAX);
+    rx_buffer.reserve(CRSF_FRAME_SIZE_MAX);
     
     start_time = std::chrono::high_resolution_clock::now();
 }
 
 
-void CrsfParser::parse_incoming_byte(uint8_t b)
-{
-    _rx_buf[_rx_buf_pos++] = b;
-    
+void CrsfParser::parse_incoming_bytes()
+{   
     bool reprocess;
     do
     {
         reprocess = false;
-        if (_rx_buf_pos > 1)
+        if (rx_buffer.size() > 1)
         {
-            uint8_t len = _rx_buf[1];
-            if (len < 3 || len > (CRSF_MAX_PAYLOAD_LEN + 2))
-            {
-                shift_rx_buffer(1);
+            if (rx_buffer[0] == CRSF_SYNC_BYTE) {
+                uint8_t len = rx_buffer[1];
+
+                if (len < 3 || len > (CRSF_MAX_PAYLOAD_LEN + 2))
+                {
+                    shift_left_rx_buffer_until_byte(CRSF_SYNC_BYTE);
+                    begin_packet_time = millis(start_time);
+                    reprocess = true;
+                }
+
+                else if ((int)rx_buffer.size() >= (len + 2))
+                {
+                    uint8_t in_crc = rx_buffer[2 + len - 1];
+                    uint8_t calculated_crc = _crc.calc(rx_buffer.data() + 2,  len - 1);
+                    if (calculated_crc == in_crc)
+                    {
+                        process_packet_in();
+                    }
+
+                    reprocess = true;
+                    begin_packet_time = millis(start_time);
+                    shift_left_rx_buffer(len + 2);
+                } 
+            } else {
+                shift_left_rx_buffer_until_byte(CRSF_SYNC_BYTE);
                 reprocess = true;
             }
-
-            else if (_rx_buf_pos >= (len + 2))
-            {
-                uint8_t in_crc = _rx_buf[2 + len - 1];
-                uint8_t crc = _crc.calc(&_rx_buf[2], len - 1);
-                if (crc == in_crc)
-                {
-                    process_packet_in();
-                    shift_rx_buffer(len + 2);
-                    reprocess = true;
-                }
-                else
-                {
-                    shift_rx_buffer(1);
-                    reprocess = true;
-                }
-            } 
         }
     } while (reprocess);
-
-
-    if (_rx_buf_pos == (sizeof(_rx_buf) / sizeof(_rx_buf[0])))
-    {
-        _rx_buf_pos = 0;
-    }
-
-    // Check time to drop packet
-    if (_rx_buf_pos > 0 && !is_link_up())
-    {
-        while (_rx_buf_pos)
-        {
-            shift_rx_buffer(1);
-        }
-    }
 }
 
 
@@ -70,39 +57,48 @@ void CrsfParser::process_packet_in()
 {   
     _last_receive_time = millis(this->start_time);
 
-    const crsf_header_t *hdr = (crsf_header_t *)_rx_buf;
-    if (hdr->device_addr == CRSF_ADDRESS_FLIGHT_CONTROLLER)
+    const Frame *frame = (Frame *)rx_buffer.data();
+    if (frame->device_address == CRSF_ADDRESS_FLIGHT_CONTROLLER)
     {
-        switch (hdr->type)
+        switch (frame->type)
         {
         case CRSF_FRAMETYPE_RC_CHANNELS_PACKED:
-            compile_channels_packet(hdr);
+            compile_channels_packet(frame);
             break;
         case CRSF_FRAMETYPE_LINK_STATISTICS:
-            compile_link_statistics_packet(hdr);
+            compile_link_statistics_packet(frame);
             break;
         }
     }
 }
 
-
-void CrsfParser::shift_rx_buffer(uint8_t cnt)
+void CrsfParser::shift_left_rx_buffer(uint8_t cnt)
 {
-    if (cnt >= _rx_buf_pos)
+    if (cnt >= rx_buffer.size())
     {
-        _rx_buf_pos = 0;
+        rx_buffer.clear();
         return;
     }
 
-    // Otherwise do the slow shift down
-    uint8_t *src = &_rx_buf[cnt];
-    uint8_t *dst = &_rx_buf[0];
-    _rx_buf_pos -= cnt;
-    uint8_t left = _rx_buf_pos;
-    while (left--)
-        *dst++ = *src++;
+    rx_buffer.erase(rx_buffer.begin(), rx_buffer.begin() + cnt);
 }
 
+
+void CrsfParser::shift_left_rx_buffer_until_byte(uint8_t key)
+{
+    for (unsigned long i = 0; i < rx_buffer.size(); i++)
+    {
+        if (rx_buffer[i] == key)
+        {
+            rx_buffer.erase(rx_buffer.begin(), rx_buffer.begin() + i);
+            return;
+        }
+    }
+
+    // If not can not find sync byte
+    rx_buffer.clear();
+    return;
+}
 
 bool CrsfParser::is_channels_actual() 
 {
@@ -122,9 +118,9 @@ bool CrsfParser::is_link_up()
 }
 
 
-void CrsfParser::compile_channels_packet(const crsf_header_t *p)
+void CrsfParser::compile_channels_packet(const Frame *p)
 {
-    crsf_channels_t *ch = (crsf_channels_t *)&p->data;
+    CrsfChannels *ch = (CrsfChannels *)&p->payload;
     _channels[0] = ch->ch0;
     _channels[1] = ch->ch1;
     _channels[2] = ch->ch2;
@@ -145,9 +141,10 @@ void CrsfParser::compile_channels_packet(const crsf_header_t *p)
     _last_channels_time = millis(this->start_time);
 }
 
-void CrsfParser::compile_link_statistics_packet(const crsf_header_t *p)
+void CrsfParser::compile_link_statistics_packet(const Frame *p)
 {
-    const crsfLinkStatistics_t *link = (crsfLinkStatistics_t *)p->data;
+    const LinkStatisticsFrame *link = (LinkStatisticsFrame *)p->payload;
     memcpy(&link_statistics_packet, link, sizeof(link_statistics_packet));
+
     _last_link_statistics_time = millis(this->start_time);
 }

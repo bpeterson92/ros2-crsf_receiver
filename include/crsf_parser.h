@@ -25,37 +25,45 @@ public:
     static const unsigned int CRSF_FAILSAFE_STAGE1_MS = 200;
 
     CrsfParser();
-    void parse_incoming_byte(uint8_t b);
+    void parse_incoming_bytes();
     int get_channel_value(unsigned int ch) const { return _channels[ch - 1]; }
     int* get_channels_values() const { return (int*)_channels; };
-    crsfLinkStatistics_t get_link_info() const { return link_statistics_packet; };
+    LinkStatisticsFrame get_link_info() const { return link_statistics_packet; };
 
     bool is_channels_actual();
     bool is_link_statistics_actual();
     bool is_link_up();
 
+
+    vector<uint8_t> rx_buffer;
+
 private:
     Crc8 _crc;
     
     std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
-    // std::vector<uint8_t> rx_buffer;
 
-    crsfLinkStatistics_t link_statistics_packet;
+    struct Frame _frame;
+
+
+    LinkStatisticsFrame link_statistics_packet;
     uint8_t _rx_buf[CRSF_FRAME_SIZE_MAX];
     uint8_t _rx_buf_pos;
 
     uint32_t _last_receive_time;
     uint32_t _last_channels_time;
     uint32_t _last_link_statistics_time;
+    uint32_t begin_packet_time;
 
     int _channels[CRSF_NUM_CHANNELS];
 
     void handle_byte_received();
-    void shift_rx_buffer(uint8_t cnt);
+    void shift_left_rx_buffer(uint8_t cnt);
+    void shift_left_rx_buffer_until_byte(uint8_t key);
     void process_packet_in();
+    bool is_packet_time_expire();
 
-    void compile_channels_packet(const crsf_header_t *p);
-    void compile_link_statistics_packet(const crsf_header_t *p);
+    void compile_channels_packet(const Frame *p);
+    void compile_link_statistics_packet(const Frame *p);
 };
 
 

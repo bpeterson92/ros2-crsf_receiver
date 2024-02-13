@@ -26,19 +26,18 @@ class CrsfReceiverNode: public rclcpp::Node
 public:
   explicit CrsfReceiverNode();
   ~CrsfReceiverNode();
-
-  void timer_callback();
-
+  
 private:
   CppLinuxSerial::SerialPort serial;
   CrsfParser parser;
 
   std::string device;
-  vector<uint8_t> received_buffer;
   rclcpp::TimerBase::SharedPtr timer_;
 
   rclcpp::Publisher<CRSFChannels16>::SharedPtr channels_publisher;
   rclcpp::Publisher<CRSFLinkInfo>::SharedPtr link_publisher;
+
+  void main_timer_callback();
 };
 
 

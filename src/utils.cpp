@@ -43,17 +43,17 @@ CRSFChannels16 convert_to_channels_message(int* channels) {
     return message;
 }
 
-CRSFLinkInfo convert_to_link_info(crsfLinkStatistics_t link_info) {
+CRSFLinkInfo convert_to_link_info(LinkStatisticsFrame link_info) {
     CRSFLinkInfo message;
-    message.rssi_1.data = link_info.uplink_RSSI_1;
-    message.rssi_2.data = link_info.uplink_RSSI_2;
-    message.link_quality.data = link_info.uplink_Link_quality;
-    message.uplink_snr.data = link_info.uplink_SNR;
+    message.rssi_1.data = link_info.uplink_rssi_ant1;
+    message.rssi_2.data = link_info.uplink_rssi_ant2;
+    message.link_quality.data = link_info.uplink_status;
+    message.uplink_snr.data = link_info.uplink_snr;
     message.active_antenna.data = link_info.active_antenna;
-    message.rf_mode.data = link_info.rf_Mode;
-    message.uplink_tx_power.data = link_info.uplink_TX_Power;
-    message.downlink_rssi.data = link_info.downlink_RSSI;
-    message.downlink_link_quality.data = link_info.downlink_Link_quality;
-    message.downlink_snr.data = link_info.downlink_SNR;
+    message.rf_mode.data = link_info.rf_mode;
+    message.uplink_tx_power.data = link_info.uplink_tx_power;
+    message.downlink_rssi.data = link_info.downlink_rssi;
+    message.downlink_link_quality.data = link_info.downlink_status;
+    message.downlink_snr.data = link_info.downlink_dnr;
     return message;
 }

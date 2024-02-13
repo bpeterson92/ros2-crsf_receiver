@@ -5,7 +5,7 @@ CrsfReceiverNode::CrsfReceiverNode(): Node("crsf_reader_node")
 {
     this->declare_parameter("device", "/dev/serial0");
     this->declare_parameter("baudrate", CRSF_BAUDRATE);
-    this->declare_parameter("link_stats", false);
+    this->declare_parameter("link_stats", true);
     this->declare_parameter("receiver_rate", 100);
 
     channels_publisher = this->create_publisher<crsf_receiver_msg::msg::CRSFChannels16>(
@@ -29,17 +29,15 @@ CrsfReceiverNode::CrsfReceiverNode(): Node("crsf_reader_node")
 
     timer_ = this->create_wall_timer(
         std::chrono::milliseconds(period), 
-        std::bind(&CrsfReceiverNode::timer_callback, this)
+        std::bind(&CrsfReceiverNode::main_timer_callback, this)
     );
-
-    received_buffer.reserve(CRSF_FRAME_SIZE_MAX * 10);
-
+    
     serial.SetDevice(device);
     serial.SetBaudRate(baudrate);
     serial.SetTimeout(period / 2);
 }
 
-void CrsfReceiverNode::timer_callback()
+void CrsfReceiverNode::main_timer_callback()
 {
     if(serial.GetState() == CppLinuxSerial::State::CLOSED) {
         try {
@@ -53,11 +51,8 @@ void CrsfReceiverNode::timer_callback()
 
     if(serial.Available())
     {
-        serial.ReadBinary(received_buffer);
-        for (uint8_t b: received_buffer) {
-            parser.parse_incoming_byte(b);
-        }
-        received_buffer.clear();
+        serial.ReadBinary(parser.rx_buffer);
+        parser.parse_incoming_bytes();
     }
 
     if(parser.is_channels_actual()) {

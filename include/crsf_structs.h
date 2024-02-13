@@ -1,19 +1,40 @@
-#pragma once
+#ifndef CRSF_STRUCTS_HPP
+#define CRSF_STRUCTS_HPP
 
 #include <stdint.h>
+#include <crsf_protocol.h>
 
 #define PACKED __attribute__((packed))
 
 
-typedef struct crsf_header_s
-{
-    uint8_t device_addr; // from crsf_addr_e
-    uint8_t frame_size;  // counts size after this byte, so it must be the payload size + 2 (type and crc)
-    uint8_t type;        // from crsf_frame_type_e
-    uint8_t data[];
-} PACKED crsf_header_t;
+#define CRSF_FRAMELEN_MAX   64U      // maximum possible framelength
+#define CSRF_HEADER_LEN     2U       // header length
+#define CRSF_FRAME_PAYLOAD_MAX (CRSF_FRAMELEN_MAX - CSRF_HEADER_LEN)  
 
-typedef struct crsf_channels_s
+
+struct Frame {
+    uint8_t device_address;
+    uint8_t length;
+    uint8_t type;
+    uint8_t payload[CRSF_FRAME_PAYLOAD_MAX - 1];
+} PACKED;
+
+
+struct LinkStatisticsFrame {
+    uint8_t uplink_rssi_ant1; // ( dBm * -1 )
+    uint8_t uplink_rssi_ant2; // ( dBm * -1 )
+    uint8_t uplink_status; // Package success rate / Link quality ( % )
+    int8_t uplink_snr; // ( db )
+    uint8_t active_antenna; // Diversity active antenna ( enum ant. 1 = 0, ant. 2 )
+    uint8_t rf_mode; // ( enum 4fps = 0 , 50fps, 150hz)
+    uint8_t uplink_tx_power; // ( enum 0mW = 0, 10mW, 25 mW, 100 mW, 500 mW, 1000 mW, 2000mW )
+    uint8_t downlink_rssi; // ( dBm * -1 )
+    uint8_t downlink_status; // Downlink package success rate / Link quality ( % )
+    int8_t downlink_dnr; // ( db )
+} PACKED;
+
+
+struct CrsfChannels
 {
     unsigned ch0 : 11;
     unsigned ch1 : 11;
@@ -31,19 +52,7 @@ typedef struct crsf_channels_s
     unsigned ch13 : 11;
     unsigned ch14 : 11;
     unsigned ch15 : 11;
-} PACKED crsf_channels_t;
+} PACKED;
 
 
-typedef struct crsfPayloadLinkstatistics_s
-{
-    uint8_t uplink_RSSI_1;
-    uint8_t uplink_RSSI_2;
-    uint8_t uplink_Link_quality;
-    int8_t uplink_SNR;
-    uint8_t active_antenna;
-    uint8_t rf_Mode;
-    uint8_t uplink_TX_Power;
-    uint8_t downlink_RSSI;
-    uint8_t downlink_Link_quality;
-    int8_t downlink_SNR;
-} crsfLinkStatistics_t;
+#endif
