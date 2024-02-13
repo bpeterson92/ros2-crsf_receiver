@@ -44,16 +44,11 @@ private:
 
     struct Frame _frame;
 
-
-    LinkStatisticsFrame link_statistics_packet;
-    uint8_t _rx_buf[CRSF_FRAME_SIZE_MAX];
-    uint8_t _rx_buf_pos;
-
     uint32_t _last_receive_time;
     uint32_t _last_channels_time;
     uint32_t _last_link_statistics_time;
-    uint32_t begin_packet_time;
 
+    LinkStatisticsFrame link_statistics_packet;
     int _channels[CRSF_NUM_CHANNELS];
 
     void handle_byte_received();

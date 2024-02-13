@@ -27,7 +27,6 @@ void CrsfParser::parse_incoming_bytes()
                 if (len < 3 || len > (CRSF_MAX_PAYLOAD_LEN + 2))
                 {
                     shift_left_rx_buffer_until_byte(CRSF_SYNC_BYTE);
-                    begin_packet_time = millis(start_time);
                     reprocess = true;
                 }
 
@@ -41,7 +40,6 @@ void CrsfParser::parse_incoming_bytes()
                     }
 
                     reprocess = true;
-                    begin_packet_time = millis(start_time);
                     shift_left_rx_buffer(len + 2);
                 } 
             } else {
