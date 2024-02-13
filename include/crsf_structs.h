@@ -30,7 +30,7 @@ struct LinkStatisticsFrame {
     uint8_t uplink_tx_power; // ( enum 0mW = 0, 10mW, 25 mW, 100 mW, 500 mW, 1000 mW, 2000mW )
     uint8_t downlink_rssi; // ( dBm * -1 )
     uint8_t downlink_status; // Downlink package success rate / Link quality ( % )
-    int8_t downlink_dnr; // ( db )
+    int8_t downlink_snr; // ( db )
 } PACKED;
 
 
